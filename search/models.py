@@ -14,7 +14,7 @@ class SearchResult(models.Model):
     FILE_TYPE_COMMON, FILE_TYPE_RAR, FILE_TYPE_FILE, FILE_TYPE_IMG, \
         FILE_TYPE_MUSIC, FILE_TYPE_VIDEO, FILE_TYPE_TXT = range(7)
 
-    id = models.BigIntegerField(max_length=32, primary_key=True, db_index=True, default=id_generate())
+    id = models.BigIntegerField(primary_key=True, db_index=True, default=id_generate())
     name = models.CharField(max_length=225,  db_index=True)
     type = models.IntegerField(db_index=True, default=TYPE_BAIDU)
     status = models.IntegerField(db_index=True, default=STATUS_NORMAL)
