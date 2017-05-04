@@ -1,5 +1,6 @@
 # coding=utf-8
 
+import datetime
 from django.db import models
 from lib.id_generate import id_generate
 
@@ -17,8 +18,13 @@ class SearchResult(models.Model):
     id = models.BigIntegerField(primary_key=True, db_index=True, default=id_generate())
     name = models.CharField(max_length=225,  db_index=True)
     type = models.IntegerField(db_index=True, default=TYPE_BAIDU)
+    size = models.CharField(max_length=60, default=u'未知')
+    author = models.CharField(max_length=60, default=u'未知')
     status = models.IntegerField(db_index=True, default=STATUS_NORMAL)
     file_type = models.IntegerField(db_index=True, default=FILE_TYPE_COMMON)
+    url = models.CharField(max_length=225)
+    create_datetime = models.DateTimeField(default=datetime.datetime.now())
+    last_check_datetime = models.DateTimeField(auto_now=True)
 
 
 
