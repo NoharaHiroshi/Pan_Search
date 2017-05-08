@@ -6,6 +6,8 @@ from lib.id_generate import id_generate
 
 
 class SearchResult(models.Model):
+    class Meta:
+        db_table = 'main_search_result'
 
     # 百度网盘、磁力链接
     TYPE_BAIDU, TYPE_MAGNET = range(2)
@@ -25,6 +27,8 @@ class SearchResult(models.Model):
     url = models.CharField(max_length=225)
     create_datetime = models.DateTimeField(default=datetime.datetime.now())
     last_check_datetime = models.DateTimeField(auto_now=True)
+
+    
 
 
 
