@@ -3,7 +3,7 @@
 import datetime
 from django.db import models
 from lib.id_generate import id_generate
-
+from lib.base_model import JSONEncodedDictField
 
 class SearchResult(models.Model):
     class Meta:
@@ -27,8 +27,13 @@ class SearchResult(models.Model):
     url = models.CharField(max_length=225)
     create_datetime = models.DateTimeField(default=datetime.datetime.now())
     last_check_datetime = models.DateTimeField(auto_now=True)
+    content = JSONEncodedDictField(default=dict())
 
-    
+if __name__ == '__main__':
+    s = SearchResult()
+    s.content['name'] = 'test'
+    print s.content
+
 
 
 
