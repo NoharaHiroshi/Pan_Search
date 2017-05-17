@@ -22,6 +22,7 @@ class SearchResult(models.Model):
     type = models.IntegerField(db_index=True, default=TYPE_BAIDU)
     size = models.CharField(max_length=60, default=u'未知')
     author = models.CharField(max_length=60, default=u'未知')
+    author_id = models.CharField(max_length=60, default=u'')
     status = models.IntegerField(db_index=True, default=STATUS_NORMAL)
     file_type = models.IntegerField(db_index=True, default=FILE_TYPE_COMMON)
     url = models.CharField(max_length=225)
