@@ -17,8 +17,8 @@ class JSONEncodedDictField(models.TextField):
         else:
             return value
 
-    def from_db_value(self, value):
-        if value is not None:
+    def from_db_value(self, value, expression, connection, context):
+        if value is not None and isinstance(value, dict):
             self.content = json.loads(value)
             return self.content
         else:
