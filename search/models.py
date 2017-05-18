@@ -31,6 +31,16 @@ class SearchResult(models.Model):
     last_check_datetime = models.DateTimeField(auto_now=True)
     content = JSONEncodedDictField(default=dict())
 
+
+class AuthorResult(models.Model):
+    class Meta:
+        db_table = 'main_author_search_result'
+
+    id = models.BigIntegerField(primary_key=True, db_index=True)
+    url = models.CharField(max_length=225, default='')
+    share_count = models.IntegerField(db_index=True, default=0)
+
+
 if __name__ == '__main__':
     pass
 

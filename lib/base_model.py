@@ -12,7 +12,7 @@ class JSONEncodedDictField(models.TextField):
 
     def get_prep_value(self, value):
         if value is not None:
-            self.content.update(json.dumps(value))
+            self.content = json.dumps(value)
             return self.content
         else:
             return value

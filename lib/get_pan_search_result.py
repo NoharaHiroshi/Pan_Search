@@ -1,8 +1,10 @@
 # coding=utf-8
 
+import os
 import requests
 import random
 from bs4 import BeautifulSoup as bs
+from search.models import SearchResult, AuthorResult
 
 
 class SearchResultHandler:
@@ -39,6 +41,11 @@ class SearchResultHandler:
                         'response': 'fail',
                         'info': 'can not check hit'
                     })
+                else:
+                    result.update({
+                        'response': 'ok',
+                        'info': response.url
+                    })
             else:
                 result.update({
                     'response': 'fail',
@@ -51,6 +58,25 @@ class SearchResultHandler:
             })
         return result
 
+    def store_author(self):
+        result = {
+            'response': 'ok',
+            'info': ''
+        }
+        check_hit = self.check_hit()
+        if check_hit.get('response', None) == 'ok':
+            author_result = AuthorResult()
+            author_result.id = self.uk
+            author_result.url = check_hit.get('info', None)
+            author_result.save()
+        else:
+            result.update({
+                'response': 'fail',
+                'info': 'can not check hit'
+            })
+        return result
+
+
 if __name__ == '__main__':
     test = SearchResultHandler()
-    print test.check_hit()
+    print test.store_author()
