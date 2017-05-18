@@ -25,7 +25,7 @@ class SearchResultHandler:
         uk = ''.join(randint_list)
         return uk
 
-    def check_hit(self):
+    def store_author(self):
         result = {
             'response': 'ok',
             'info': ''
@@ -34,6 +34,7 @@ class SearchResultHandler:
         if int(response.status_code) == 200:
             soup = bs(response.content, 'lxml')
             info = soup.select('span[class="homepagelink"]')
+            count_info = soup.select('em[id="sharecnt_cnt"]')
             if info:
                 author_name = info[0].get_text()
                 if author_name == u'匿名':
@@ -42,14 +43,19 @@ class SearchResultHandler:
                         'info': 'can not check hit'
                     })
                 else:
-                    result.update({
-                        'response': 'ok',
-                        'info': response.url
-                    })
+                    if count_info:
+                        share_count = int(count_info[0].get_text())
+                    else:
+                        share_count = 0
+                    author_result = AuthorResult()
+                    author_result.id = self.uk
+                    author_result.url = response.url
+                    author_result.share_count = share_count
+                    author_result.save()
             else:
                 result.update({
                     'response': 'fail',
-                    'info': 'can get info'
+                    'info': 'can not get info'
                 })
         else:
             result.update({
@@ -58,25 +64,11 @@ class SearchResultHandler:
             })
         return result
 
-    def store_author(self):
-        result = {
-            'response': 'ok',
-            'info': ''
-        }
-        check_hit = self.check_hit()
-        if check_hit.get('response', None) == 'ok':
-            author_result = AuthorResult()
-            author_result.id = self.uk
-            author_result.url = check_hit.get('info', None)
-            author_result.save()
-        else:
-            result.update({
-                'response': 'fail',
-                'info': 'can not check hit'
-            })
-        return result
-
 
 if __name__ == '__main__':
-    test = SearchResultHandler()
-    print test.store_author()
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Pan_Search.settings")
+    import django
+    django.setup()
+    for i in range(10000):
+        test = SearchResultHandler()
+        print test.store_author()
