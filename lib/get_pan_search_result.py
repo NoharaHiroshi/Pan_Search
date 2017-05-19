@@ -75,10 +75,77 @@ class SearchResultHandler:
         return result
 
 
+class SearchResourceHandler:
+
+    def __init__(self):
+        self.base_url = r'http://yun.baidu.com/pcloud/feed/getsharelist'
+        self.author_url = r'http://yun.baidu.com/share/home'
+
+    @property
+    def headers_templates(self):
+        headers = {
+            'content-type': 'application/json',
+            'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:22.0) Gecko/20100101 Firefox/22.0',
+            'Referer': None,
+            'Host': 'yun.baidu.com'
+        }
+        return headers
+
+    @property
+    def params_template(self):
+        params = {
+            't': None,
+            'category': 0,
+            'auth_type': 1,
+            'request_location': 'share_hone',
+            'start': 0,
+            'limit': 60,
+            'query_uk': None,
+            'channel': 'chunlei',
+            'clienttype': 0,
+            'web': 1,
+            'logid': None,
+            'bdstoken': 'null'
+        }
+        return params
+
+    @property
+    def share_objects(self):
+        all_objects = AuthorResult.objects.filter(share_count__gt=0)
+        if all_objects:
+            return all_objects
+        else:
+            return list()
+
+    def get_resource(self, share_objects):
+        result = {
+            'response': 'ok',
+            'info': ''
+        }
+        for obj in share_objects:
+            self.params_template.update({
+                't': '1495185174435',
+                'query_uk': obj.id,
+                'logid': 'MTQ5NTE4NTE3NDQzOTAuOTA1NDI5NTQ2NDg4NDQ5'
+            })
+            self.headers_templates.update({
+                'Referer': obj.url
+            })
+            response = requests.get(self.base_url, params=self.params_template, headers=self.headers_templates)
+            print response.url
+            print response.content
+        return result
+
+
 if __name__ == '__main__':
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Pan_Search.settings")
     import django
     django.setup()
-    for i in range(10000):
-        test = SearchResultHandler()
-        print test.store_author()
+    # for i in range(10000):
+    #     test = SearchResultHandler()
+    #     print test.store_author()
+    test = SearchResourceHandler()
+    all_obj = test.share_objects
+    test.get_resource(all_obj)
+
+
