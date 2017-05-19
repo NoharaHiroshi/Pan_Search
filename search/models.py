@@ -31,6 +31,21 @@ class SearchResult(models.Model):
     last_check_datetime = models.DateTimeField(auto_now=True)
     content = JSONEncodedDictField(default=dict())
 
+    def to_dict(self):
+        return {
+            u'id': str(self.id),
+            u'name': self.name,
+            u'type': self.type,
+            u'size': self.size,
+            u'author': self.author,
+            u'author_id': self.author_id,
+            u'status': self.status,
+            u'file_type': self.file_type,
+            u'url': self.url,
+            u'create_datetime': self.create_datetime,
+            u'last_check_datetime': self.last_check_datetime
+        }
+
 
 class AuthorResult(models.Model):
     class Meta:
@@ -39,6 +54,8 @@ class AuthorResult(models.Model):
     id = models.BigIntegerField(primary_key=True, db_index=True)
     url = models.CharField(max_length=225, default='')
     share_count = models.IntegerField(db_index=True, default=0)
+    check_count = models.IntegerField(db_index=True, default=0)
+    create_datetime = models.DateTimeField(default=datetime.datetime.now())
 
 
 if __name__ == '__main__':
