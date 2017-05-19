@@ -87,7 +87,12 @@ class SearchResourceHandler:
             'content-type': 'application/json',
             'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:22.0) Gecko/20100101 Firefox/22.0',
             'Referer': None,
-            'Host': 'yun.baidu.com'
+            'Host': 'yun.baidu.com',
+            'Accept': 'application / json, text / javascript, * / *; q = 0.01',
+            'Accept - Encoding': 'gzip, deflate, sdch',
+            'Accept - Language': 'zh - CN, zh; q= 0.8',
+            'Cache - Control': 'max - age = 0',
+            'Connection': 'keep - alive',
         }
         return headers
 
