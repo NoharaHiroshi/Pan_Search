@@ -27,7 +27,7 @@ class SearchResult(models.Model):
     status = models.IntegerField(db_index=True, default=STATUS_NORMAL)
     file_type = models.IntegerField(db_index=True, default=FILE_TYPE_COMMON)
     url = models.CharField(max_length=225, default='')
-    create_datetime = models.DateTimeField(default=datetime.datetime.now())
+    create_datetime = models.DateTimeField(default=datetime.datetime.now)
     last_check_datetime = models.DateTimeField(auto_now=True)
     content = JSONEncodedDictField(default=dict())
 
@@ -52,10 +52,12 @@ class AuthorResult(models.Model):
         db_table = 'main_author_search_result'
 
     id = models.BigIntegerField(primary_key=True, db_index=True)
-    url = models.CharField(max_length=225, default='')
+    url = models.CharField(max_length=225, default=u'')
+    name = models.CharField(max_length=225, default=u'匿名')
+    avatar_url = models.CharField(max_length=225, default=u'')
     share_count = models.IntegerField(db_index=True, default=0)
     check_count = models.IntegerField(db_index=True, default=0)
-    create_datetime = models.DateTimeField(default=datetime.datetime.now())
+    create_datetime = models.DateTimeField(default=datetime.datetime.now)
 
 
 if __name__ == '__main__':

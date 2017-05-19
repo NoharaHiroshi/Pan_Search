@@ -3,16 +3,16 @@
 import os
 import requests
 import random
-from bs4 import BeautifulSoup as bs
+import json
 from search.models import SearchResult, AuthorResult
 
 
 class SearchResultHandler:
 
-    def __init__(self):
-        self.uk = self.generate_search_id()
+    def __init__(self, uk=None):
+        self.uk = uk or self.generate_search_id()
         self.base_url = r'http://yun.baidu.com/share/home'
-        self.params = {'uk': self.uk}
+        self.get_user_url = r'http://yun.baidu.com/pcloud/user/getinfo'
         self.headers = {'content-type': 'application/json',
                         'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:22.0) Gecko/20100101 Firefox/22.0'}
 
@@ -30,28 +30,38 @@ class SearchResultHandler:
             'response': 'ok',
             'info': ''
         }
-        response = requests.get(self.base_url, params=self.params, headers=self.headers)
+        response = requests.get(self.get_user_url, params={'query_uk': self.uk}, headers=self.headers)
         if int(response.status_code) == 200:
-            soup = bs(response.content, 'lxml')
-            info = soup.select('span[class="homepagelink"]')
-            count_info = soup.select('em[id="sharecnt_cnt"]')
+            info = json.loads(response.content)
             if info:
-                author_name = info[0].get_text()
-                if author_name == u'匿名':
+                error_no = info.get(u'errno', 1)
+                if error_no == 0:
+                    user_info_dict = info.get(u'user_info', dict())
+                    author_name = user_info_dict.get(u'uname', u'匿名')
+                    if author_name == u'匿名':
+                        result.update({
+                            'response': 'fail',
+                            'info': 'can not check hit'
+                        })
+                    else:
+                        try:
+                            author_result = AuthorResult()
+                            author_result.id = self.uk
+                            author_result.name = author_name
+                            author_result.avatar_url = user_info_dict.get(u'avatar_url', None)
+                            author_result.share_count = user_info_dict.get(u'pubshare_count', 0)
+                            author_result.url = ''.join([self.base_url, '?uk=%s' % self.uk])
+                            author_result.save()
+                        except Exception as e:
+                            result.update({
+                                'response': 'fail',
+                                'info': 'user_id repeat: %s' % e
+                            })
+                else:
                     result.update({
                         'response': 'fail',
-                        'info': 'can not check hit'
+                        'info': 'errno is not 0: %s' % info
                     })
-                else:
-                    if count_info:
-                        share_count = int(count_info[0].get_text())
-                    else:
-                        share_count = 0
-                    author_result = AuthorResult()
-                    author_result.id = self.uk
-                    author_result.url = response.url
-                    author_result.share_count = share_count
-                    author_result.save()
             else:
                 result.update({
                     'response': 'fail',
