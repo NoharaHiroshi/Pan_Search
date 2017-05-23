@@ -4,6 +4,7 @@ import os
 import requests
 import random
 import json
+import time
 from search.models import SearchResult, AuthorResult
 
 
@@ -24,6 +25,11 @@ class SearchResultHandler:
             randint_list.append(str(random.randint(0, 9)))
         uk = ''.join(randint_list)
         return uk
+
+    @staticmethod
+    def generate_author_id():
+        last_object = AuthorResult.objects.order_by('-id')[0]
+        return last_object.id
 
     def store_author(self):
         result = {
@@ -57,6 +63,14 @@ class SearchResultHandler:
                                 'response': 'fail',
                                 'info': 'user_id repeat: %s' % e
                             })
+                elif error_no == -55:
+                    s = random.randint(0, 60)
+                    time.sleep(s)
+                    result.update({
+                        'response': 'fail',
+                        'info': 'errno is -55: too fast, sleep %s s' % s
+                    })
+
                 else:
                     result.update({
                         'response': 'fail',
@@ -146,11 +160,11 @@ if __name__ == '__main__':
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Pan_Search.settings")
     import django
     django.setup()
-    # for i in range(10000):
-    #     test = SearchResultHandler()
-    #     print test.store_author()
-    test = SearchResourceHandler()
-    all_obj = test.share_objects
-    test.get_resource(all_obj)
+    test = SearchResultHandler()
+    id = test.generate_author_id()
+    print id
+    # test = SearchResourceHandler()
+    # all_obj = test.share_objects
+    # test.get_resource(all_obj)
 
 
