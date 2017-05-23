@@ -10,8 +10,8 @@ from search.models import SearchResult, AuthorResult
 
 class SearchResultHandler:
 
-    def __init__(self, uk=None):
-        self.uk = uk or self.generate_search_id()
+    def __init__(self, uk):
+        self.uk = uk
         self.base_url = r'http://yun.baidu.com/share/home'
         self.get_user_url = r'http://yun.baidu.com/pcloud/user/getinfo'
         self.headers = {'content-type': 'application/json',
@@ -26,17 +26,34 @@ class SearchResultHandler:
         uk = ''.join(randint_list)
         return uk
 
-    @staticmethod
-    def generate_author_id():
-        last_object = AuthorResult.objects.order_by('-id')[0]
-        return last_object.id
+    @classmethod
+    def generate_last_author_id(cls):
+        try:
+            last_object_id = AuthorResult.objects.order_by('-id')[0].id
+        except Exception as e:
+            print e
+            last_object_id = 0000000000
+        return last_object_id
 
     def store_author(self):
         result = {
             'response': 'ok',
             'info': ''
         }
-        response = requests.get(self.get_user_url, params={'query_uk': self.uk}, headers=self.headers)
+        try:
+            response = requests.get(self.get_user_url, params={'query_uk': self.uk}, headers=self.headers, timeout=30)
+        except requests.exceptions.ConnectTimeout:
+            result.update({
+                'response': 'fail',
+                'info': 'response connected timeout'
+            })
+            return result
+        except requests.exceptions.Timeout:
+            result.update({
+                'response': 'fail',
+                'info': 'response connected timeout'
+            })
+            return result
         if int(response.status_code) == 200:
             info = json.loads(response.content)
             if info:
@@ -64,7 +81,7 @@ class SearchResultHandler:
                                 'info': 'user_id repeat: %s' % e
                             })
                 elif error_no == -55:
-                    s = random.randint(0, 60)
+                    s = random.randint(0, 360)
                     time.sleep(s)
                     result.update({
                         'response': 'fail',
@@ -87,6 +104,19 @@ class SearchResultHandler:
                 'info': 'response status_code is not 200'
             })
         return result
+
+
+def get_order_info():
+    last_uk = SearchResultHandler.generate_last_author_id()
+    while True:
+        try:
+            obj = SearchResultHandler(last_uk)
+            result = obj.store_author()
+            print 'uk:%s, result:%s' % (last_uk, result)
+            last_uk += 1
+        except Exception as e:
+            print e
+            break
 
 
 class SearchResourceHandler:
@@ -160,11 +190,6 @@ if __name__ == '__main__':
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Pan_Search.settings")
     import django
     django.setup()
-    test = SearchResultHandler()
-    id = test.generate_author_id()
-    print id
-    # test = SearchResourceHandler()
-    # all_obj = test.share_objects
-    # test.get_resource(all_obj)
+    get_order_info()
 
 
