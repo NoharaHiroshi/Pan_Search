@@ -6,6 +6,8 @@ import random
 import json
 import time
 from search.models import SearchResult, AuthorResult
+from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 class SearchResultHandler:
@@ -190,6 +192,8 @@ if __name__ == '__main__':
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Pan_Search.settings")
     import django
     django.setup()
-    get_order_info()
+    # get_order_info()
+    browser = webdriver.Chrome()
+    browser.get('http://yun.baidu.com/share/home?uk=5011')
 
 
