@@ -5,6 +5,7 @@ import requests
 import random
 import json
 import time
+from bs4 import BeautifulSoup as bs
 from search.models import SearchResult, AuthorResult
 from lib.session import get_session
 
@@ -148,8 +149,7 @@ if __name__ == '__main__':
     import django
     django.setup()
     # get_order_info()
-    with get_session() as web_session:
-        web_session.get('http://yun.baidu.com/share/home?uk=5011')
+    with get_session('http://yun.baidu.com/share/home?uk=5011') as web_session:
         print web_session.page_source
 
 
