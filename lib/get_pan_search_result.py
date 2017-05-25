@@ -5,9 +5,11 @@ import requests
 import random
 import json
 import time
+import datetime
 from bs4 import BeautifulSoup as bs
 from search.models import SearchResult, AuthorResult
 from lib.session import get_session
+from lib.id_generate import id_generate
 
 class SearchResultHandler:
 
@@ -133,15 +135,44 @@ class SearchResourceHandler:
         else:
             return list()
 
-    def get_resource(self, share_objects):
+    @staticmethod
+    def get_resource(share_objects):
         result = {
             'response': 'ok',
             'info': ''
         }
-        for obj in share_objects:
-            with get_session() as web_session:
-                web_session.get(obj.url)
-                print web_session.page_source
+        try:
+            for obj in share_objects:
+                with get_session(obj.url) as web_session:
+                    soup = bs(web_session.page_source, 'lxml')
+                    link_info_list = soup.select('a[class="file-handler b-no-ln dir-handler"]')
+                    if link_info_list:
+                        for link_info in link_info_list:
+                            d = link_info.attrs
+                            link_url = d.get('href', None)
+                            link_title = d.get('title', None)
+                            search_resource = SearchResult()
+                            search_resource.id = id_generate()
+                            search_resource.name = link_title
+                            search_resource.url = link_url
+                            search_resource.type = SearchResult.TYPE_BAIDU
+                            search_resource.status = SearchResult.STATUS_NORMAL
+                            search_resource.author = obj.name
+                            search_resource.author_id = obj.id
+                            search_resource.create_datetime = datetime.datetime.now()
+                            search_resource.last_check_datetime = datetime.datetime.now()
+                            search_resource.save()
+                    else:
+                        result = {
+                            'response': 'fail',
+                            'info': 'link_info_list can not get'
+                        }
+        except Exception as e:
+            result = {
+                'response': 'fail',
+                'info': '%s' % e
+            }
+        return result
 
 
 if __name__ == '__main__':
@@ -149,7 +180,10 @@ if __name__ == '__main__':
     import django
     django.setup()
     # get_order_info()
-    with get_session('http://yun.baidu.com/share/home?uk=5011') as web_session:
-        print web_session.page_source
+    test = SearchResourceHandler()
+    share_obj = test.share_objects
+    test.get_resource(share_obj)
+
+
 
 
