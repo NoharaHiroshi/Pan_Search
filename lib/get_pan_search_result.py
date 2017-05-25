@@ -6,9 +6,7 @@ import random
 import json
 import time
 from search.models import SearchResult, AuthorResult
-from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-
+from lib.session import get_session
 
 class SearchResultHandler:
 
@@ -124,41 +122,7 @@ def get_order_info():
 class SearchResourceHandler:
 
     def __init__(self):
-        self.base_url = r'http://yun.baidu.com/pcloud/feed/getsharelist'
-        self.author_url = r'http://yun.baidu.com/share/home'
-
-    @property
-    def headers_templates(self):
-        headers = {
-            'content-type': 'application/json',
-            'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:22.0) Gecko/20100101 Firefox/22.0',
-            'Referer': None,
-            'Host': 'yun.baidu.com',
-            'Accept': 'application / json, text / javascript, * / *; q = 0.01',
-            'Accept - Encoding': 'gzip, deflate, sdch',
-            'Accept - Language': 'zh - CN, zh; q= 0.8',
-            'Cache - Control': 'max - age = 0',
-            'Connection': 'keep - alive',
-        }
-        return headers
-
-    @property
-    def params_template(self):
-        params = {
-            't': None,
-            'category': 0,
-            'auth_type': 1,
-            'request_location': 'share_hone',
-            'start': 0,
-            'limit': 60,
-            'query_uk': None,
-            'channel': 'chunlei',
-            'clienttype': 0,
-            'web': 1,
-            'logid': None,
-            'bdstoken': 'null'
-        }
-        return params
+        pass
 
     @property
     def share_objects(self):
@@ -174,18 +138,9 @@ class SearchResourceHandler:
             'info': ''
         }
         for obj in share_objects:
-            self.params_template.update({
-                't': '1495185174435',
-                'query_uk': obj.id,
-                'logid': 'MTQ5NTE4NTE3NDQzOTAuOTA1NDI5NTQ2NDg4NDQ5'
-            })
-            self.headers_templates.update({
-                'Referer': obj.url
-            })
-            response = requests.get(self.base_url, params=self.params_template, headers=self.headers_templates)
-            print response.url
-            print response.content
-        return result
+            with get_session() as web_session:
+                web_session.get(obj.url)
+                print web_session.page_source
 
 
 if __name__ == '__main__':
@@ -193,7 +148,8 @@ if __name__ == '__main__':
     import django
     django.setup()
     # get_order_info()
-    browser = webdriver.Chrome()
-    browser.get('http://yun.baidu.com/share/home?uk=5011')
+    with get_session() as web_session:
+        web_session.get('http://yun.baidu.com/share/home?uk=5011')
+        print web_session.page_source
 
 
