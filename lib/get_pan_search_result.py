@@ -11,6 +11,7 @@ from search.models import SearchResult, AuthorResult
 from lib.session import get_session
 from lib.id_generate import id_generate
 
+
 class SearchResultHandler:
 
     def __init__(self, uk):
@@ -179,10 +180,10 @@ if __name__ == '__main__':
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Pan_Search.settings")
     import django
     django.setup()
-    # get_order_info()
-    test = SearchResourceHandler()
-    share_obj = test.share_objects
-    test.get_resource(share_obj)
+    get_order_info()
+    # test = SearchResourceHandler()
+    # share_obj = test.share_objects
+    # test.get_resource(share_obj)
 
 
 
