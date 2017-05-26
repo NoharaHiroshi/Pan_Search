@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup as bs
 from search.models import SearchResult, AuthorResult
 from lib.session import get_session
 from lib.id_generate import id_generate
+from django.db import transaction
 
 
 class SearchResultHandler:
@@ -148,6 +149,7 @@ class SearchResourceHandler:
                     soup = bs(web_session.page_source, 'lxml')
                     link_info_list = soup.select('a[class="file-handler b-no-ln dir-handler"]')
                     if link_info_list:
+                        search_resource_list = list()
                         for link_info in link_info_list:
                             d = link_info.attrs
                             link_url = d.get('href', None)
@@ -162,8 +164,9 @@ class SearchResourceHandler:
                             search_resource.author_id = obj.id
                             search_resource.create_datetime = datetime.datetime.now()
                             search_resource.last_check_datetime = datetime.datetime.now()
+                            search_resource_list.append(search_resource)
                             print u'file_name: %s' % link_title
-                            search_resource.save()
+                        SearchResult.objects.bulk_create(search_resource_list)
                     else:
                         result = {
                             'response': 'fail',
