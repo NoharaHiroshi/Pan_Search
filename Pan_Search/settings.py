@@ -82,8 +82,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'pan_search',
         'USER': 'root',
-        'PASSWORD': '123456',
-        'HOST': '',
+        'PASSWORD': 'My#*07**4##',
+        'HOST': '47.92.34.124',
         'PORT': '3306',
     }
 }

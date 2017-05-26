@@ -13,7 +13,7 @@ def get_session(url):
     browser = webdriver.PhantomJS(desired_capabilities=cap)
     try:
         browser.get(url)
-        WebDriverWait(browser, 10, 0.5).until_not(EC.visibility_of(browser.find_element_by_id('inifiniteListViewTips')))
+        WebDriverWait(browser, 5, 0.5).until_not(EC.visibility_of(browser.find_element_by_id('inifiniteListViewTips')))
         yield browser
     except Exception as e:
         print e
