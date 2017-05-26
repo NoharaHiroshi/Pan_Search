@@ -110,7 +110,7 @@ class SearchResultHandler:
         return result
 
 
-def get_order_info():
+def get_author_info():
     last_uk = SearchResultHandler.generate_last_author_id()
     while True:
         try:
@@ -162,6 +162,7 @@ class SearchResourceHandler:
                             search_resource.author_id = obj.id
                             search_resource.create_datetime = datetime.datetime.now()
                             search_resource.last_check_datetime = datetime.datetime.now()
+                            print u'file_name: %s' % link_title
                             search_resource.save()
                     else:
                         result = {
@@ -180,10 +181,10 @@ if __name__ == '__main__':
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Pan_Search.settings")
     import django
     django.setup()
-    get_order_info()
-    # test = SearchResourceHandler()
-    # share_obj = test.share_objects
-    # test.get_resource(share_obj)
+    # get_order_info()
+    test = SearchResourceHandler()
+    share_obj = test.share_objects
+    test.get_resource(share_obj)
 
 
 

@@ -7,7 +7,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 @contextlib.contextmanager
 def get_session(url):
-    browser = webdriver.Chrome()
+    browser = webdriver.PhantomJS()
+    browser.maximize_window()
     try:
         browser.get(url)
         WebDriverWait(browser, 30, 0.5).until_not(EC.visibility_of(browser.find_element_by_id('inifiniteListViewTips')))
@@ -16,4 +17,4 @@ def get_session(url):
         print e
         raise
     finally:
-        browser.close()
+        browser.quit()
