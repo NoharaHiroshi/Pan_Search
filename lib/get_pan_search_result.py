@@ -146,40 +146,46 @@ class SearchResourceHandler:
         try:
             for obj in share_objects:
                 if obj.flag == AuthorResult.FLAG_NEED:
-                    SearchResult.objects.filter(author_id=obj.id).delete()
-                    with get_session(obj.url) as web_session:
-                        soup = bs(web_session.page_source, 'lxml')
-                        link_info_list = soup.select('a[class="file-handler b-no-ln dir-handler"]')
-                        share_datetime = soup.select('div[class="time-col col"]')[0].get_text()
-                        if link_info_list:
-                            search_resource_list = list()
-                            for link_info in link_info_list:
-                                d = link_info.attrs
-                                link_url = d.get('href', None)
-                                link_title = d.get('title', None)
-                                search_resource = SearchResult()
-                                search_resource.id = id_generate()
-                                search_resource.name = link_title
-                                search_resource.url = link_url
-                                search_resource.type = SearchResult.TYPE_BAIDU
-                                search_resource.file_type = validate_file_type(link_title)
-                                search_resource.status = SearchResult.STATUS_NORMAL
-                                search_resource.author = obj.name
-                                search_resource.author_id = obj.id
-                                search_resource.share_datetime = datetime.datetime.strptime(
-                                        share_datetime, '%Y-%m-%d %H:%M')
-                                search_resource.create_datetime = datetime.datetime.now()
-                                search_resource.last_check_datetime = datetime.datetime.now()
-                                search_resource_list.append(search_resource)
-                                print u'file_name: %s' % link_title
-                            SearchResult.objects.bulk_create(search_resource_list)
-                            obj.flag = AuthorResult.FLAG_NO_NEED
-                            obj.save()
-                        else:
-                            result = {
-                                'response': 'fail',
-                                'info': 'link_info_list can not get'
-                            }
+                    try:
+                        SearchResult.objects.filter(author_id=obj.id).delete()
+                        with get_session(obj.url) as web_session:
+                            soup = bs(web_session.page_source, 'lxml')
+                            link_info_list = soup.select('a[class="file-handler b-no-ln dir-handler"]')
+                            share_datetime = soup.select('div[class="time-col col"]')[0].get_text()
+                            if link_info_list:
+                                search_resource_list = list()
+                                for link_info in link_info_list:
+                                    d = link_info.attrs
+                                    link_url = d.get('href', None)
+                                    link_title = d.get('title', None)
+                                    search_resource = SearchResult()
+                                    search_resource.id = id_generate()
+                                    search_resource.name = link_title
+                                    search_resource.url = link_url
+                                    search_resource.type = SearchResult.TYPE_BAIDU
+                                    search_resource.file_type = validate_file_type(link_title)
+                                    search_resource.status = SearchResult.STATUS_NORMAL
+                                    search_resource.author = obj.name
+                                    search_resource.author_id = obj.id
+                                    search_resource.share_datetime = datetime.datetime.strptime(
+                                            share_datetime, '%Y-%m-%d %H:%M')
+                                    search_resource.create_datetime = datetime.datetime.now()
+                                    search_resource.last_check_datetime = datetime.datetime.now()
+                                    search_resource_list.append(search_resource)
+                                    print u'file_name: %s' % link_title
+                                SearchResult.objects.bulk_create(search_resource_list)
+                                obj.flag = AuthorResult.FLAG_NO_NEED
+                                obj.save()
+                            else:
+                                result = {
+                                    'response': 'fail',
+                                    'info': 'link_info_list can not get'
+                                }
+                    except Exception as e:
+                        result = {
+                            'response': 'fail',
+                            'info': '%s' % e
+                        }
                 else:
                     continue
         except Exception as e:
@@ -197,7 +203,7 @@ if __name__ == '__main__':
     # get_order_info()
     test = SearchResourceHandler()
     share_obj = test.share_objects
-    test.get_resource(share_obj)
+    print test.get_resource(share_obj)
 
 
 
