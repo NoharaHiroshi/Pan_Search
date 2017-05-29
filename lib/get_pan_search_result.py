@@ -121,7 +121,7 @@ def get_author_info():
             last_uk += 1
         except Exception as e:
             print e
-            break
+            continue
 
 
 class SearchResourceHandler:

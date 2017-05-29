@@ -18,4 +18,4 @@ def get_session(url):
     except Exception as e:
         print e
     finally:
-        browser.close()
+        browser.quit()
