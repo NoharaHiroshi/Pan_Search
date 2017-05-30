@@ -6,9 +6,16 @@
     <title>search</title>
 </head>
 <body>
-    <div ng-app="">
+    <div ng-app="proApp">
          <input type="text" ng-model="info">
-         <h1>Hello {{info}}</h1>
+         <h1>Hello [[info]]</h1>
     </div>
+    <script>
+        proApp = angular.module('proApp', []);
+        proApp.config(function($interpolateProvider) {
+            $interpolateProvider.startSymbol('[[');
+            $interpolateProvider.endSymbol(']]');
+        });
+    </script>
 </body>
 </html>

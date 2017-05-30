@@ -111,8 +111,11 @@ class SearchResultHandler:
         return result
 
 
-def get_author_info():
-    last_uk = SearchResultHandler.generate_last_author_id()
+def get_author_info(uk=None):
+    if uk:
+        last_uk = uk
+    else:
+        last_uk = SearchResultHandler.generate_last_author_id()
     while True:
         try:
             obj = SearchResultHandler(last_uk)
