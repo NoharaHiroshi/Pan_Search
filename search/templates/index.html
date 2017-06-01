@@ -6,16 +6,30 @@
     <title>search</title>
 </head>
 <body>
-    <div ng-app="proApp">
-         <input type="text" ng-model="info">
-         <h1>Hello [[info]]</h1>
+    <div ng-app="searchApp" ng-controller="searchController">
+         <input type="text" ng-model="search">
+		 <button ng-click='searchResult()'>搜索</button>  
     </div>
     <script>
-        proApp = angular.module('proApp', []);
-        proApp.config(function($interpolateProvider) {
+        app = angular.module('searchApp', []);
+        app.config(function($interpolateProvider) {
             $interpolateProvider.startSymbol('[[');
             $interpolateProvider.endSymbol(']]');
         });
+		app.controller('searchController', function($scope, $http){
+			$scope.searchResult = function(){
+				$http({
+					method: 'POST',
+					url: '/search',
+					data: {search: $scope.search}
+				}).then(function successCallback(response) {
+						console.log(response)
+					}, function errorCallback(response) {
+						console.log(response)
+				});
+			};
+		})
+		
     </script>
 </body>
 </html>
