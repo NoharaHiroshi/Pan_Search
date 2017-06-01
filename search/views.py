@@ -1,11 +1,11 @@
-from django.shortcuts import render
-
-# Create your views here.
+# coding=utf-8
 
 import json
 from django.shortcuts import render
 from django.http import HttpResponse
 from search.models import SearchResult
+from django.views.decorators.csrf import csrf_protect
+from django.shortcuts import render_to_response
 
 
 def index(request):
@@ -19,6 +19,7 @@ def index(request):
         print e
 
 
+@csrf_protect
 def search(request):
     result = {
         'response': 'ok',
@@ -40,7 +41,7 @@ def search(request):
             else:
                 result['info'] = 'no result get'
             context = json.dumps(result)
-            return HttpResponse(context, content_type="application/json")
+            return render_to_response(context, content_type="application/json")
         else:
             return 'this is a POST method'
     except Exception as e:
