@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from search.models import SearchResult
 from django.views.decorators.csrf import csrf_protect
-from django.shortcuts import render_to_response
+from django.shortcuts import RequestContext, render_to_response
 
 
 def index(request):
@@ -41,7 +41,7 @@ def search(request):
             else:
                 result['info'] = 'no result get'
             context = json.dumps(result)
-            return render_to_response(context, content_type="application/json")
+            return render_to_response(context=context, context_instance=RequestContext(request), content_type="application/json")
         else:
             return 'this is a POST method'
     except Exception as e:
