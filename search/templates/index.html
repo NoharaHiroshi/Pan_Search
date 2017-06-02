@@ -9,10 +9,18 @@
 <body>
     <div ng-app="searchApp" ng-controller="searchController">
         <form>
-            {% csrf_token %}
             <input type="text" ng-model="search">
             <button ng-click='searchResult()'>搜索</button>
         </form>
+		<div>
+			<ul>
+				<li ng-repeat="result in search_result">
+					<span><a ng-href="[[result.url]]" target="blank">[[ result.name ]]</a></span>
+					<span>[[ result.file_type ]]</span>
+					<span>[[ result.author ]]</span>
+				</li>
+			</ul>
+		</div>
     </div>
     <script>
         app = angular.module('searchApp', []);
@@ -26,11 +34,10 @@
 					method: 'POST',
 					url: '/search',
 					data: {
-                        "search": $scope.search,
-                        "csrfmiddlewaretoken": $('input[name=csrfmiddlewaretoken]').val()
+                        "search": $scope.search
                     }
 				}).then(function successCallback(response) {
-						console.log(response)
+						$scope.search_result = response.data.search_result_list;
 					}, function errorCallback(response) {
 						console.log(response)
 				});

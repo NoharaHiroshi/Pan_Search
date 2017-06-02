@@ -4,8 +4,7 @@ import json
 from django.shortcuts import render
 from django.http import HttpResponse
 from search.models import SearchResult
-from django.views.decorators.csrf import csrf_protect
-from django.shortcuts import RequestContext, render_to_response
+from django.views.decorators.csrf import csrf_exempt
 
 
 def index(request):
@@ -19,7 +18,7 @@ def index(request):
         print e
 
 
-@csrf_protect
+@csrf_exempt
 def search(request):
     result = {
         'response': 'ok',
@@ -28,21 +27,24 @@ def search(request):
     }
     try:
         if request.method == 'POST':
-            search_info = request.POST.get('search', None)
+            search_info = json.loads(request.body).get('search', None)
             all_query = SearchResult.objects.filter(
-                name=search_info
+                name__icontains=search_info
             )
             if all_query:
-                search_result_list = list
+                search_result_list = list()
                 for query in all_query:
-                    search_dict = query.to_ict()
+                    search_dict = query.to_dict()
                     search_result_list.append(search_dict)
                 result['search_result_list'] = search_result_list
             else:
-                result['info'] = 'no result get'
-            context = json.dumps(result)
-            return render_to_response(context=context, context_instance=RequestContext(request), content_type="application/json")
+                result['info'] = 'Unable to get search result'
         else:
-            return 'this is a POST method'
+            result.update({
+                'response': 'fail',
+                'info': 'This is a POST method'
+            })
+        context = json.dumps(result, ensure_ascii=False)
+        return HttpResponse(context, content_type="application/json")
     except Exception as e:
         print e

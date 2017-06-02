@@ -40,9 +40,9 @@ class SearchResult(models.Model):
             u'status': self.status,
             u'file_type': self.file_type,
             u'url': self.url,
-            u'create_datetime': self.create_datetime,
-            u'share_datetime': self.share_datetime,
-            u'last_check_datetime': self.last_check_datetime
+            u'create_datetime': u'%s' % self.create_datetime,
+            u'share_datetime': u'%s' % self.share_datetime,
+            u'last_check_datetime': u'%s' % self.last_check_datetime
         }
 
 
