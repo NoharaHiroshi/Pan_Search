@@ -134,7 +134,7 @@ class SearchResourceHandler:
 
     @property
     def share_objects(self):
-        all_objects = AuthorResult.objects.filter(share_count__gt=0)
+        all_objects = AuthorResult.objects.filter(share_count__gt=0, flag=0)
         if all_objects:
             return all_objects
         else:
