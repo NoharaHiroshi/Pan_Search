@@ -9,12 +9,14 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 def index(request):
-    context = {
+    result = {
         'response': 'ok',
         'info': ''
     }
     try:
-        return render(request, 'search/index.html', context)
+        count = SearchResult.objects.count()
+        result['count'] = count if count else 0
+        return render(request, 'search/index.html', result)
     except Exception as e:
         print e
 
