@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import datetime
+import re
 from django.db import models
 from lib.id_generate import id_generate
 from lib.base_model import JSONEncodedDictField
@@ -29,6 +30,11 @@ class SearchResult(models.Model):
     last_check_datetime = models.DateTimeField(auto_now=True)
     content = JSONEncodedDictField(default=dict())
 
+    @property
+    def human_file_type(self):
+        h_file_type = re.sub(r'\.', '', self.file_type)
+        return h_file_type
+
     def to_dict(self):
         return {
             u'id': str(self.id),
@@ -38,7 +44,7 @@ class SearchResult(models.Model):
             u'author': self.author,
             u'author_id': self.author_id,
             u'status': self.status,
-            u'file_type': self.file_type,
+            u'file_type': self.human_file_type,
             u'url': self.url,
             u'create_datetime': u'%s' % self.create_datetime,
             u'share_datetime': u'%s' % self.share_datetime,

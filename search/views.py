@@ -3,6 +3,7 @@
 import json
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.http import Http404
 from search.models import SearchResult
 from django.views.decorators.csrf import csrf_exempt
 
@@ -13,7 +14,7 @@ def index(request):
         'info': ''
     }
     try:
-        return render(request, 'index.html', context)
+        return render(request, 'search/index.html', context)
     except Exception as e:
         print e
 
@@ -46,5 +47,5 @@ def search(request):
             })
         context = json.dumps(result, ensure_ascii=False)
         return HttpResponse(context, content_type="application/json")
-    except Exception as e:
-        print e
+    except Exception as ue:
+        raise Http404(u"网站出现错误，请联系管理员")

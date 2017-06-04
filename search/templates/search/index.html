@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<script src="http://cdn.static.runoob.com/libs/angular.js/1.4.6/angular.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css">
+	<link href="../js/iCheck/skins/minimal/minimal.css" rel="stylesheet">
+	<link href="../js/iCheck/skins/square/square.css" rel="stylesheet">
+	<link href="../js/iCheck/skins/square/red.css" rel="stylesheet">
+	<link href="../js/iCheck/skins/square/blue.css" rel="stylesheet">
+    <title>search</title>
+</head>
+<body>
+    <div ng-app="searchApp" ng-controller="searchController">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<section class="panel">
+						<div class="panel-body">
+							<div class="col-sm-8">
+								<div class="col-sm-6">
+									<input type="text" class="form-control spinner" placeholder="请输入搜索内容" ng-model="search">
+								</div>
+								<button class="btn btn-info" ng-click='searchResult()'>Search</button>
+							</div>
+						</div>
+					</section>
+				</div>
+			</div>
+			<div>
+				<ul>
+					<li ng-repeat="result in search_result">
+						<span><a ng-href="[[result.url]]" target="blank">[[ result.name ]]</a></span>
+						<span>[[ result.file_type ]]</span>
+						<span>[[ result.author ]]</span>
+					</li>
+				</ul>
+			</div>
+		</div>
+    </div>
+    <script>
+        app = angular.module('searchApp', []);
+        app.config(function($interpolateProvider) {
+            $interpolateProvider.startSymbol('[[');
+            $interpolateProvider.endSymbol(']]');
+        });
+		app.controller('searchController', function($scope, $http){
+			$scope.searchResult = function(){
+				$http({
+					method: 'POST',
+					url: '/search',
+					data: {
+                        "search": $scope.search
+                    }
+				}).then(function successCallback(response) {
+						$scope.search_result = response.data.search_result_list;
+					}, function errorCallback(response) {
+						console.log(response)
+				});
+			};
+		})
+    </script>
+</body>
+</html>

@@ -25,4 +25,4 @@ if __name__ == '__main__':
     import django
     django.setup()
     source = SearchResourceHandler()
-    get_thread_source(source, 5)
+    get_thread_source(source, 10)
