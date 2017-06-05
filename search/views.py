@@ -51,3 +51,27 @@ def search(request):
         return HttpResponse(context, content_type="application/json")
     except Exception as ue:
         raise Http404(u"网站出现错误，请联系管理员")
+
+
+@csrf_exempt
+def create_record(request):
+    result = {
+        'response': 'ok',
+        'info': '',
+    }
+    try:
+        if request.method == 'POST':
+            req = json.loads(request.body)
+            keyword = req.get('keyword', None)
+            customer_id = req.get('customer_id', None)
+            resource_id = req.get('resource_id', None)
+            print resource_id
+        else:
+            result.update({
+                'response': 'fail',
+                'info': 'This is a POST method'
+            })
+        context = json.dumps(result, ensure_ascii=False)
+        return HttpResponse(context, content_type="application/json")
+    except Exception as ue:
+        raise Http404(u"网站出现错误，请联系管理员")

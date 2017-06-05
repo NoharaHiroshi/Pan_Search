@@ -27,7 +27,7 @@
 			<div>
 				<ul>
 					<li ng-repeat="result in search_result">
-						<span><a ng-href="[[result.url]]" target="blank">[[ result.name ]]</a></span>
+						<span><a ng-href="[[result.url]]" target="blank" ng-click="searchRecord(result)">[[ result.name ]]</a></span>
 						<span>[[ result.file_type ]]</span>
 						<span>[[ result.author ]]</span>
 					</li>
@@ -42,6 +42,7 @@
             $interpolateProvider.endSymbol(']]');
         });
 		app.controller('searchController', function($scope, $http){
+		    $scope.resource_id = '';
 			$scope.searchResult = function(){
 				$http({
 					method: 'POST',
@@ -55,6 +56,19 @@
 						console.log(response)
 				});
 			};
+			$scope.searchRecord = function (result) {
+                $http({
+                    method: 'POST',
+                    url: '/crate_record',
+                    data: {
+                        "keyword": $scope.search,
+                        "customer_id": 123456,
+                        "resource_id": result.id
+                    }
+                }).then(function successCallback(response) {
+                    console.log(response)
+                })
+            }
 		})
     </script>
 </body>

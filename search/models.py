@@ -72,6 +72,43 @@ class AuthorResult(models.Model):
     flag = models.IntegerField(db_index=True, default=FLAG_NEED)
     create_datetime = models.DateTimeField(default=datetime.datetime.now)
 
+    def to_dict(self):
+        return {
+            u'id': str(self.id),
+            u'url': self.url,
+            u'name': self.name,
+            u'status': self.status,
+            u'avatar_url': self.avatar_url,
+            u'share_count': self.share_count,
+            u'check_count': self.check_count,
+            u'flag': self.flag,
+            u'create_datetime': self.create_datetime
+        }
+
+
+class KeyWordResult(models.Model):
+    class Meta:
+        db_table = 'statistics_keyword_result'
+
+    id = models.BigIntegerField(primary_key=True, db_index=True)
+    # 搜索的关键词
+    keyword = models.CharField(max_length=225, default=u'')
+    # 当前用户ID
+    customer_id = models.BigIntegerField(db_index=True)
+    # 选中的资源ID
+    resource_id = models.BigIntegerField(db_index=True, default=None)
+    # 查询时间
+    search_datetime = models.DateTimeField(default=datetime.datetime.now)
+
+    def to_dict(self):
+        return {
+            u'id': str(self.id),
+            u'keyword': self.keyword,
+            u'customer_id': str(self.customer_id),
+            u'resource_id': str(self.resource_id),
+            u'search_datetime': self.search_datetime
+        }
+
 
 if __name__ == '__main__':
     pass
