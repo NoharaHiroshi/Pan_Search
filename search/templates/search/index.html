@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	{% load staticfiles %}
 	<script src="http://cdn.static.runoob.com/libs/angular.js/1.4.6/angular.min.js"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script src="{% static 'search/js/jquery/2.0.3/jquery.min.js' %}"></script>
 	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css">
 	<link href="{% static 'search/css/style.css' %}" rel="stylesheet">
     <title>search</title>
@@ -59,11 +59,12 @@
 			$scope.searchRecord = function (result) {
                 $http({
                     method: 'POST',
-                    url: '/crate_record',
+                    url: '/create_record',
                     data: {
                         "keyword": $scope.search,
                         "customer_id": 123456,
-                        "resource_id": result.id
+                        "resource_id": result.id,
+                        "resource_name": result.name
                     }
                 }).then(function successCallback(response) {
                     console.log(response)

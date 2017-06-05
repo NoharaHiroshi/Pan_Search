@@ -4,8 +4,9 @@ import json
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import Http404
-from search.models import SearchResult
+from search.models import SearchResult, KeyWordRecord
 from django.views.decorators.csrf import csrf_exempt
+from lib.id_generate import id_generate
 
 
 def index(request):
@@ -49,8 +50,8 @@ def search(request):
             })
         context = json.dumps(result, ensure_ascii=False)
         return HttpResponse(context, content_type="application/json")
-    except Exception as ue:
-        raise Http404(u"网站出现错误，请联系管理员")
+    except Exception as e:
+        raise Http404(u"网站出现错误，请联系管理员 %s" % e)
 
 
 @csrf_exempt
@@ -65,7 +66,20 @@ def create_record(request):
             keyword = req.get('keyword', None)
             customer_id = req.get('customer_id', None)
             resource_id = req.get('resource_id', None)
-            print resource_id
+            resource_name = req.get('resource_name', None)
+            if None not in [keyword, customer_id, resource_id, resource_name]:
+                record = KeyWordRecord()
+                record.id = id_generate()
+                record.customer_id = customer_id
+                record.keyword = keyword
+                record.resource_id = resource_id
+                record.resource_name = resource_name
+                record.save()
+            else:
+                result.update({
+                    'response': 'fail',
+                    'info': 'Incomplete information'
+                })
         else:
             result.update({
                 'response': 'fail',
@@ -73,5 +87,5 @@ def create_record(request):
             })
         context = json.dumps(result, ensure_ascii=False)
         return HttpResponse(context, content_type="application/json")
-    except Exception as ue:
-        raise Http404(u"网站出现错误，请联系管理员")
+    except Exception as e:
+        raise Http404(u"网站出现错误，请联系管理员 %s" % e)

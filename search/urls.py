@@ -6,5 +6,5 @@ from . import views
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^search$', views.search, name='search'),
-    url(r'^create_keyword$', views.create_record, name='create_record')
+    url(r'^create_record$', views.create_record, name='create_record')
 ]

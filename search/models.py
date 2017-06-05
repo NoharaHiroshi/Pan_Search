@@ -86,9 +86,9 @@ class AuthorResult(models.Model):
         }
 
 
-class KeyWordResult(models.Model):
+class KeyWordRecord(models.Model):
     class Meta:
-        db_table = 'statistics_keyword_result'
+        db_table = 'statistics_keyword_record'
 
     id = models.BigIntegerField(primary_key=True, db_index=True)
     # 搜索的关键词
@@ -96,7 +96,9 @@ class KeyWordResult(models.Model):
     # 当前用户ID
     customer_id = models.BigIntegerField(db_index=True)
     # 选中的资源ID
-    resource_id = models.BigIntegerField(db_index=True, default=None)
+    resource_id = models.BigIntegerField(db_index=True)
+    # 选中资源名称
+    resource_name = models.CharField(max_length=225, default=u'')
     # 查询时间
     search_datetime = models.DateTimeField(default=datetime.datetime.now)
 
