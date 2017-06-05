@@ -7,9 +7,14 @@ from lib.get_pan_search_result import SearchResourceHandler
 
 def get_thread_source(search_obj, num):
     share_list = search_obj.share_objects
-    step = len(share_list) // num
-    step = step if step != 0 else 1
-    s_share_list = [share_list[i:i+step] for i in range(0, len(share_list), step)]
+    count = len(share_list)
+    step = count // num if count > num else 1
+    s_share_list = list()
+    for i in range(0, len(share_list), step):
+        if i + step < count:
+            s_share_list.append(share_list[i:i+step])
+        else:
+            s_share_list.append(share_list[i:])
     threads = list()
     num = len(s_share_list) if len(s_share_list) < num else num
     for j in range(num):
