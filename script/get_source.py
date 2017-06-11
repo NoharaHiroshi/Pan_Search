@@ -17,9 +17,10 @@ def get_thread_source(search_obj, num):
             s_share_list.append(share_list[i:])
     threads = list()
     num = len(s_share_list) if len(s_share_list) < num else num
-    for j in range(num):
-        t = threading.Thread(target=search_obj.get_resource, args=(s_share_list[j],))
-        threads.append(t)
+    if num != 0:
+        for j in range(num):
+            t = threading.Thread(target=search_obj.get_resource, args=(s_share_list[j],))
+            threads.append(t)
     for t in threads:
         t.setDaemon(True)
         t.start()
@@ -30,4 +31,4 @@ if __name__ == '__main__':
     import django
     django.setup()
     source = SearchResourceHandler()
-    get_thread_source(source, 10)
+    get_thread_source(source, 5)

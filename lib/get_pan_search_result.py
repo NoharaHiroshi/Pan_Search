@@ -10,17 +10,22 @@ from bs4 import BeautifulSoup as bs
 from search.models import SearchResult, AuthorResult
 from lib.session import get_session
 from lib.id_generate import id_generate
+from lib.ip_api import IPInfo
 from utils.validate_file_type import validate_file_type
 
 
 class SearchResultHandler:
 
-    def __init__(self, uk):
+    def __init__(self, uk, proxy_object=None):
         self.uk = uk
         self.base_url = r'http://yun.baidu.com/share/home'
         self.get_user_url = r'http://yun.baidu.com/pcloud/user/getinfo'
         self.headers = {'content-type': 'application/json',
-                        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:22.0) Gecko/20100101 Firefox/22.0'}
+                        'Connection': 'keep-alive',
+                        'Server': 'bfe/1.0.8.18',
+                        'User-Agent': 'Mozilla/5.0 (Linux; U; Android 2.0; en-us; Droid Build/ESD20)'
+                                      ' AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17'}
+        self.proxies = proxy_object.get_random_ip(proxy_object.ip_pool)
 
     @staticmethod
     def generate_search_id():
@@ -46,7 +51,10 @@ class SearchResultHandler:
             'info': ''
         }
         try:
-            response = requests.get(self.get_user_url, params={'query_uk': self.uk}, headers=self.headers, timeout=30)
+            if self.proxies:
+                print self.proxies
+            response = requests.get(self.get_user_url, params={'query_uk': self.uk}, headers=self.headers, timeout=30,
+                                    proxies=self.proxies)
         except requests.exceptions.ConnectTimeout:
             result.update({
                 'response': 'fail',
@@ -87,7 +95,7 @@ class SearchResultHandler:
                             })
                 elif error_no == -55:
                     s = random.randint(0, 360)
-                    time.sleep(s)
+                    # time.sleep(s)
                     result.update({
                         'response': 'fail',
                         'info': 'errno is -55: too fast, sleep %s s' % s
@@ -111,14 +119,14 @@ class SearchResultHandler:
         return result
 
 
-def get_author_info(uk=None):
+def get_author_info(uk=None, proxy_object=None):
     if uk:
         last_uk = uk
     else:
         last_uk = SearchResultHandler.generate_last_author_id()
     while True:
         try:
-            obj = SearchResultHandler(last_uk)
+            obj = SearchResultHandler(last_uk, proxy_object=proxy_object)
             result = obj.store_author()
             print 'uk:%s, result:%s' % (last_uk, result)
             last_uk += 1
@@ -184,8 +192,8 @@ if __name__ == '__main__':
     import django
     django.setup()
     # get_order_info()
-    test = SearchResourceHandler()
-    share_obj = test.share_objects
+    # test = SearchResourceHandler()
+    # share_obj = test.share_objects
 
 
 
