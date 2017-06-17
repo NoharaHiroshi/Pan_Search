@@ -19,14 +19,16 @@ class IPInfo:
             print e
             return None
 
-    @staticmethod
-    def get_random_ip(pool):
-        ip = random.choice(pool)
-        proxy = {
-            'http': ip
-        }
-        return proxy
+
+def get_random_ip(pool):
+    count = len(pool)
+    selected_i = random.randint(0, count)
+    ip = pool[selected_i]
+    proxy = {
+        'http': ip
+    }
+    return proxy
 
 if __name__ == '__main__':
     ip_obj = IPInfo()
-    print ip_obj.get_random_ip(ip_obj.ip_pool)
+    print ip_obj.ip_pool

@@ -10,13 +10,13 @@ from bs4 import BeautifulSoup as bs
 from search.models import SearchResult, AuthorResult
 from lib.session import get_session
 from lib.id_generate import id_generate
-from lib.ip_api import IPInfo
+from lib.ip_api import IPInfo, get_random_ip
 from utils.validate_file_type import validate_file_type
 
 
 class SearchResultHandler:
 
-    def __init__(self, uk, proxy_object=None):
+    def __init__(self, uk, proxy_pool=None):
         self.uk = uk
         self.base_url = r'http://yun.baidu.com/share/home'
         self.get_user_url = r'http://yun.baidu.com/pcloud/user/getinfo'
@@ -25,7 +25,7 @@ class SearchResultHandler:
                         'Server': 'bfe/1.0.8.18',
                         'User-Agent': 'Mozilla/5.0 (Linux; U; Android 2.0; en-us; Droid Build/ESD20)'
                                       ' AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17'}
-        self.proxies = proxy_object.get_random_ip(proxy_object.ip_pool)
+        self.proxies = get_random_ip(proxy_pool) if proxy_pool else None
 
     @staticmethod
     def generate_search_id():
@@ -53,8 +53,10 @@ class SearchResultHandler:
         try:
             if self.proxies:
                 print self.proxies
-            response = requests.get(self.get_user_url, params={'query_uk': self.uk}, headers=self.headers, timeout=30,
-                                    proxies=self.proxies)
+                response = requests.get(self.get_user_url, params={'query_uk': self.uk}, headers=self.headers, timeout=30,
+                                        proxies=self.proxies)
+            else:
+                response = requests.get(self.get_user_url, params={'query_uk': self.uk}, headers=self.headers, timeout=30)
         except requests.exceptions.ConnectTimeout:
             result.update({
                 'response': 'fail',
@@ -119,14 +121,14 @@ class SearchResultHandler:
         return result
 
 
-def get_author_info(uk=None, proxy_object=None):
+def get_author_info(uk=None, proxy_list=None):
     if uk:
         last_uk = uk
     else:
         last_uk = SearchResultHandler.generate_last_author_id()
     while True:
         try:
-            obj = SearchResultHandler(last_uk, proxy_object=proxy_object)
+            obj = SearchResultHandler(last_uk, proxy_pool=proxy_list)
             result = obj.store_author()
             print 'uk:%s, result:%s' % (last_uk, result)
             last_uk += 1
